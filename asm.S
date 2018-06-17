@@ -1,24 +1,50 @@
-/*
- * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
- *
- * This file is part of FFmpeg.
- *
- * FFmpeg is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * FFmpeg is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with FFmpeg; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
+#if defined(__APPLE__)
 
-#include "config.h"
+#define EXTERN_PREFIX "_"
+#define EXTERN_ASM _
+
+#ifndef CONFIG_PIC
+#ifdef __PIC__
+#define CONFIG_PIC 1
+#else
+#define CONFIG_PIC 0
+#endif
+#endif
+
+#ifndef CONFIG_THUMB
+#ifdef __thumb__
+#define CONFIG_THUMB 1
+#else
+#define CONFIG_THUMB 0
+#endif
+#endif
+
+#define HAVE_AS_FUNC 0
+#define HAVE_AS_FPU_DIRECTIVE 0
+#define HAVE_SECTION_DATA_REL_RO 0
+#ifdef __aarch64__
+#define HAVE_ARMV6T2_EXTERNAL 0
+#define HAVE_ARMV8 1
+#else
+#define HAVE_ARMV6T2_EXTERNAL 1
+#define HAVE_ARMV8 0
+#endif
+#define HAVE_AS_ARCH_DIRECTIVE 0
+#define HAVE_AS_OBJECT_ARCH 0
+
+#ifdef __ARM_NEON__
+#define HAVE_NEON 1
+#else
+#define HAVE_NEON 0
+#endif
+#define HAVE_VFP 1
+#define HAVE_VFP_ARGS 0
+
+#else
+//#include "config.h"
+// TODO: implement for non apple build targets
+#error unsupported build target
+#endif
 
 #if defined(__aarch64__) || defined(_M_ARM64)
 
@@ -65,7 +91,7 @@ ELF     .size   \name, . - \name
 .else
         .section        .rodata
 .endif
-#elif !defined(__MACH__)
+#elif !defined(__APPLE__)
         .section        .rodata
 #else
         .const_data
@@ -204,7 +230,7 @@ ELF     .size   \name, . - \name
 .else
         .section        .rodata
 .endif
-#elif !defined(__MACH__)
+#elif !defined(__APPLE__)
         .section        .rodata
 #else
         .const_data
@@ -446,3 +472,23 @@ ELF     .eabi_attribute 28, 1
 #else
 #error only arm/arm64 supported
 #endif
+
+/*
+ * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
+ *
+ * This file is part of FFmpeg.
+ *
+ * FFmpeg is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * FFmpeg is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with FFmpeg; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ */
